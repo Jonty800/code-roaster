@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "extensionHost",
+            "request": "launch",
+            "name": "Launch Extension",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/**/*.js"
+            ],
+            "preLaunchTask": "npm: watch",
+            "env": {
+                "OPENAI_API_KEY": "${env:OPENAI_API_KEY}",
+                "ANTHROPIC_API_KEY": "${env:ANTHROPIC_API_KEY}"
+            }
+        }
+    ]
+}
