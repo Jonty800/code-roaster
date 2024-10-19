@@ -1,7 +1,7 @@
-import * as vscode from "vscode";
+import type { ExtensionContext } from "vscode";
 import { CodeRoaster } from "./CodeRoaster";
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
   console.log("Code Roaster is active!");
 
   const codeRoaster = new CodeRoaster(context);

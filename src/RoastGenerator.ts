@@ -1,6 +1,5 @@
 import axios from "axios";
 import { getConfig } from "./config";
-import * as vscode from "vscode";
 
 export class RoastGenerator {
   private openai = true;

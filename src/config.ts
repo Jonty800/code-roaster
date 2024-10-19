@@ -1,11 +1,11 @@
 import path = require("path");
 import fs = require("fs");
-import * as vscode from "vscode";
+import { window, workspace } from "vscode";
 
 export const getConfig = (): { [key: string]: string } => {
-  const workspaceFolders = vscode.workspace.workspaceFolders;
+  const workspaceFolders = workspace.workspaceFolders;
   if (!workspaceFolders) {
-    vscode.window.showErrorMessage("No workspace folder open");
+    window.showErrorMessage("No workspace folder open");
     return {};
   }
 

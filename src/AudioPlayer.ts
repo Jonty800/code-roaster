@@ -1,14 +1,14 @@
-import * as vscode from "vscode";
 import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import * as child_process from "child_process";
 import { getConfig } from "./config";
+import { window, ExtensionContext } from "vscode";
 
 export class AudioPlayer {
-  private context: vscode.ExtensionContext;
+  private context: ExtensionContext;
 
-  constructor(context: vscode.ExtensionContext) {
+  constructor(context: ExtensionContext) {
     this.context = context;
   }
 
@@ -53,7 +53,7 @@ export class AudioPlayer {
 
     child_process.exec(command, (error) => {
       if (error) {
-        vscode.window.showErrorMessage("Error playing audio: " + error.message);
+        window.showErrorMessage("Error playing audio: " + error.message);
       }
     });
   }
