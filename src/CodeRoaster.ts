@@ -13,6 +13,10 @@ export class CodeRoaster {
     this.audioPlayer = new AudioPlayer(context);
   }
 
+  /**
+   * Registers VS Code commands and event listeners for the Code Roaster.
+   * This includes setting up the auto-roast on save feature and the manual roast command.
+   */
   registerCommands() {
     let disposable = workspace.onDidSaveTextDocument(() => {
       this.roastCurrentFile();
@@ -30,6 +34,19 @@ export class CodeRoaster {
     this.context.subscriptions.push(roastCommand);
   }
 
+  private getRoastSettings() {
+    const config = workspace.getConfiguration("codeRoaster");
+    return {
+      useOpenAI: config.get("useOpenAI", true),
+      roastOnSave: config.get("roastOnSave", true),
+      audioEnabled: config.get("audioEnabled", true),
+    };
+  }
+
+  /**
+   * Generates a roast for the currently active file in the VS Code editor.
+   * If successful, it will display the roast in a message and optionally play it as audio.
+   */
   private async roastCurrentFile() {
     const editor = window.activeTextEditor;
     if (editor) {

@@ -40,21 +40,28 @@ export class AudioPlayer {
   }
 
   private playAudioFile(filePath: string) {
-    const platform = process.platform;
-    let command;
+    try {
+      const platform = process.platform;
+      let command;
 
-    if (platform === "win32") {
-      command = `start ${filePath}`;
-    } else if (platform === "darwin") {
-      command = `afplay ${filePath}`;
-    } else {
-      command = `xdg-open ${filePath}`;
-    }
-
-    child_process.exec(command, (error) => {
-      if (error) {
-        window.showErrorMessage("Error playing audio: " + error.message);
+      if (platform === "win32") {
+        command = `start ${filePath}`;
+      } else if (platform === "darwin") {
+        command = `afplay ${filePath}`;
+      } else {
+        command = `xdg-open ${filePath}`;
       }
-    });
+
+      child_process.exec(command, (error) => {
+        if (error) {
+          window.showErrorMessage("Error playing audio: " + error.message);
+        }
+      });
+    } finally {
+      // Clean up the temporary file after playing
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Error deleting temporary audio file:", err);
+      });
+    }
   }
 }

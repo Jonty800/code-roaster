@@ -1,8 +1,17 @@
 import axios from "axios";
 import { getConfig } from "./config";
 
+interface Message {
+  role: string;
+  content: string;
+}
+
 export class RoastGenerator {
-  private openai = true;
+  private useOpenAI: boolean;
+
+  constructor(useOpenAI: boolean = true) {
+    this.useOpenAI = useOpenAI;
+  }
 
   async generateRoast(code: string): Promise<string> {
     const messages = [
@@ -16,57 +25,67 @@ export class RoastGenerator {
       { role: "user", content: "Input code:\n\n ```" + code + "```" },
     ];
 
-    if (this.openai) {
+    if (this.useOpenAI) {
       return this.generateOpenAIRoast(messages);
     } else {
       return this.generateAnthropicRoast(messages);
     }
   }
 
-  private async generateOpenAIRoast(messages: any[]): Promise<string> {
-    const config = getConfig();
+  private async generateOpenAIRoast(messages: Message[]): Promise<string> {
+    try {
+      const config = getConfig();
 
-    const textResponse = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        model: "gpt-4o",
-        messages,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${config["OPENAI_API_KEY"]}`,
-          "Content-Type": "application/json",
+      const textResponse = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-4o",
+          messages,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${config["OPENAI_API_KEY"]}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    return textResponse.data.choices[0].message.content;
+      return textResponse.data.choices[0].message.content;
+    } catch (error) {
+      console.error("Error generating OpenAI roast:", error);
+      throw new Error("Failed to generate roast from OpenAI");
+    }
   }
 
-  private async generateAnthropicRoast(messages: any[]): Promise<string> {
-    const config = getConfig();
+  private async generateAnthropicRoast(messages: Message[]): Promise<string> {
+    try {
+      const config = getConfig();
 
-    const system = messages[0].content;
+      const system = messages[0].content;
 
-    const data = {
-      model: "claude-3-5-sonnet-20240620",
-      max_tokens: 1024,
-      messages: [{ role: "user", content: messages[1].content }],
-      system,
-    };
+      const data = {
+        model: "claude-3-5-sonnet-20240620",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: messages[1].content }],
+        system,
+      };
 
-    const response = await axios.post(
-      "https://api.anthropic.com/v1/messages",
-      data,
-      {
-        headers: {
-          "x-api-key": config["ANTHROPIC_API_KEY"],
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-        },
-      }
-    );
+      const response = await axios.post(
+        "https://api.anthropic.com/v1/messages",
+        data,
+        {
+          headers: {
+            "x-api-key": config["ANTHROPIC_API_KEY"],
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+          },
+        }
+      );
 
-    return response.data.content[0].text;
+      return response.data.content[0].text;
+    } catch (error) {
+      console.error("Error generating Anthropic roast:", error);
+      throw new Error("Failed to generate roast from Anthropic");
+    }
   }
 }
